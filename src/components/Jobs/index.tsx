@@ -17,12 +17,19 @@ const Jobs = () => {
   const { jobStore } = useStores();
 
   useEffect(() => {
+    console.log("job types: ", jobStore.employmentTypes);
     jobStore.getJobsData();
-  }, []);
+  }, [jobStore.salaryRange, jobStore.employmentTypes.length]);
 
   const changeSearchInput = (e: any) => {
     runInAction(() => {
       jobStore.searchKey = e.target.value;
+    });
+  };
+
+  const onChangeSalaryRange = (e: any) => {
+    runInAction(() => {
+      jobStore.salaryRange = e.target.value;
     });
   };
 
@@ -34,7 +41,9 @@ const Jobs = () => {
             <input
               type="checkbox"
               id={item.employmentTypeId}
-              // onChange={this.addOrRemoveJobTypeFilters}
+              onChange={(e: any) =>
+                jobStore.addOrRemoveJobTypeFilters(e.target.id)
+              }
             />
             <label htmlFor={item.employmentTypeId}>{item.label}</label>
           </li>
@@ -53,7 +62,7 @@ const Jobs = () => {
               id={item.salaryRangeId}
               value={item.salaryRangeId}
               name="salaryRange"
-              // onChange={this.changeSalaryRangeFilter}
+              onChange={onChangeSalaryRange}
             />
             <label htmlFor={item.salaryRangeId}>{item.label}</label>
           </li>
@@ -120,7 +129,7 @@ const Jobs = () => {
       case apiConst.success:
         return renderJobResultsView();
       case apiConst.failure:
-        return <FailureView /* retryMethod={this.getJobsData} */ />;
+        return <FailureView retryMethod={jobStore.getJobsData} />;
       case apiConst.inProgress:
         return <div className="loader-view-wrapper">{renderLoadingView()}</div>;
       default:

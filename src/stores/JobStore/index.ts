@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { flow, makeAutoObservable } from "mobx";
+import { flow, makeAutoObservable, observable } from "mobx";
 import apiConst from "../../Constants/apiConst";
 import Job from "../models/Job";
 import ProfileDataModel from "../models/ProfileData";
@@ -9,14 +9,18 @@ class JobStore {
   profileApiStatus = apiConst.initial;
   jobsData: Job[] = [];
   profileData: ProfileDataModel | null = null;
-  jobTypes: string[] = [];
+  employmentTypes: string[] = [];
   salaryRange = "";
   searchKey = "";
 
   constructor() {
     makeAutoObservable(
       this,
-      { getJobsData: flow.bound, getProfileData: flow.bound },
+      {
+        getJobsData: flow.bound,
+        getProfileData: flow.bound,
+        employmentTypes: observable.deep,
+      },
       { autoBind: true }
     );
   }
@@ -33,11 +37,11 @@ class JobStore {
   }
 
   *getJobsData(): Generator<any, any, any> {
-    const { jobTypes, salaryRange, searchKey } = this;
+    const { employmentTypes, salaryRange, searchKey } = this;
     this.jobsApiStatus = apiConst.inProgress;
 
     const queryParams = [];
-    queryParams.push(`employment_type=${jobTypes.join(",")}`);
+    queryParams.push(`employment_type=${employmentTypes.join(",")}`);
     queryParams.push(`minimum_package=${salaryRange}`);
     queryParams.push(`search=${searchKey}`);
 
@@ -71,6 +75,12 @@ class JobStore {
     } else {
       this.profileApiStatus = apiConst.failure;
     }
+  }
+
+  addOrRemoveJobTypeFilters(jobType: string) {
+    if (this.employmentTypes.includes(jobType)) {
+      this.employmentTypes = this.employmentTypes.filter((j) => jobType !== j);
+    } else this.employmentTypes.push(jobType);
   }
 }
 

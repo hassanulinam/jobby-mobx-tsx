@@ -1,6 +1,6 @@
 import { BsBriefcaseFill, BsStarFill } from "react-icons/bs";
 import { MdLocationOn } from "react-icons/md";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import "./index.css";
 
@@ -22,7 +22,7 @@ const JobItem = ({ details }: any) => {
   };
 
   return (
-    <li onClick={goToJobDetailsRoute}>
+    <li className="cursor-pointer" onClick={goToJobDetailsRoute}>
       <div className="job-item-card-container">
         <div className="flex-row">
           <img

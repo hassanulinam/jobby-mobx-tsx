@@ -41,6 +41,15 @@ class AuthStore {
     Cookies.set("jwt_token", token, { expires: 3 });
     console.log("saving token...", token);
     this.isUserLoggedIn = true;
+    this.resetAuthState();
+  }
+
+  resetAuthState() {
+    this.nameErr = "";
+    this.username = "";
+    this.passErr = "";
+    this.password = "";
+    this.loginErr = "";
   }
 }
 

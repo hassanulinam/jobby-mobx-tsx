@@ -11,6 +11,10 @@
   flex-direction: column;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .flex-row {
   display: flex;
   flex-direction: row;
