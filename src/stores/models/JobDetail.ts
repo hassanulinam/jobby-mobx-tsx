@@ -3,10 +3,10 @@ import SimilarJob from "./SimilarJob";
 
 class JobDetail {
   similarJobs: SimilarJob[] = [];
-  jobDetails: any;
+  jobDetailedData: any;
 
   constructor({ job_details, similar_jobs }: any) {
-    this.jobDetails = job_details;
+    this.jobDetailedData = job_details;
     this.similarJobs = similar_jobs.map((sj: any) => new SimilarJob(sj));
 
     makeAutoObservable(this);

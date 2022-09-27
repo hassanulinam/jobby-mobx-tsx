@@ -2,7 +2,7 @@ import Cookies from "js-cookie";
 import { flow, makeAutoObservable } from "mobx";
 import apiConst from "../../Constants/apiConst";
 import Job from "../models/Job";
-import ProfileDataModel from "../models/ProfileDataModel";
+import ProfileDataModel from "../models/ProfileData";
 
 class JobStore {
   jobsApiStatus = apiConst.initial;

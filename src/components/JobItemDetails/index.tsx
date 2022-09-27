@@ -12,12 +12,18 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const JobItemDetails = () => {
-  const { jobDetailStore } = useStores();
+  const { jobStore } = useStores();
   const params: any = useParams();
 
-  useEffect(() => {
+  const getCurrentJob = () => {
     const { id } = params;
-    jobDetailStore.getJobDetails(id);
+    const currJob = jobStore.jobsData.find((job) => job.id === id);
+    return currJob;
+  };
+
+  useEffect(() => {
+    const currJob = getCurrentJob();
+    currJob?.getJobDetails();
   }, []);
 
   const renderLoadingView = () => (
@@ -27,8 +33,9 @@ const JobItemDetails = () => {
   );
 
   const renderJobDetailsView = () => {
-    const jobDetails = jobDetailStore.jobDetails?.jobDetails;
-    const similarJobs = jobDetailStore.jobDetails?.similarJobs;
+    const currentJob = getCurrentJob();
+    const jobDetails = currentJob?.jobDetails?.jobDetailedData;
+    const similarJobs = currentJob?.jobDetails?.similarJobs;
     const {
       company_logo_url,
       title,
@@ -149,7 +156,8 @@ const JobItemDetails = () => {
   };
 
   const renderViewBasedOnApiStatus = () => {
-    const { jobDetailsApi } = jobDetailStore;
+    const currentJob = getCurrentJob();
+    const jobDetailsApi = currentJob?.jobDetailsApi;
 
     switch (jobDetailsApi) {
       case apiConst.inProgress:
@@ -157,7 +165,7 @@ const JobItemDetails = () => {
       case apiConst.success:
         return renderJobDetailsView();
       case apiConst.failure:
-        return <FailureView retryMethod={jobDetailStore.getJobDetails} />;
+        return <FailureView retryMethod={currentJob?.getJobDetails} />;
       default:
         return null;
     }
