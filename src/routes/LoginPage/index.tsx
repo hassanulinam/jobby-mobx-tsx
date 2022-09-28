@@ -62,7 +62,6 @@ const Login = () => {
   );
 
   const accessToken = getAccessToken();
-  console.log("loginPage-token: ", accessToken);
   if (accessToken !== undefined) return <Redirect to="/" />;
   return <div className="login-route-container">{renderForm()}</div>;
 };

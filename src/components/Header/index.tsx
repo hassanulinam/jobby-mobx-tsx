@@ -4,13 +4,16 @@ import { IoMdHome, IoMdExit } from "react-icons/io";
 import { useStores } from "../../Hooks/useStores";
 import "./index.css";
 import { observer } from "mobx-react";
+import { useClearStores } from "../../Hooks/useClearStores";
 
 const Header = () => {
   const { authStore } = useStores();
   const history = useHistory();
+  const clearStores = useClearStores();
 
   const onLogout = () => {
     authStore.onLogout();
+    clearStores();
     history.replace("/login");
   };
 

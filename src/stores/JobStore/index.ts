@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable } from "mobx";
+import { flow, makeAutoObservable } from "mobx";
 import apiConst from "../../constants/apiConst";
 import { getAccessToken } from "../../utils/accessToken";
 import makeAsyncCall from "../../utils/makeAsyncCall";
@@ -13,13 +13,12 @@ class JobStore {
   selectedEmpTypes: string[] = [];
   salaryRange = "";
   searchKey = "";
-
   apiErrors: any = null;
 
   constructor() {
     makeAutoObservable(
       this,
-      { selectedEmpTypes: observable },
+      { getProfileData: flow.bound, getJobsData: flow.bound },
       { autoBind: true }
     );
   }
@@ -53,7 +52,7 @@ class JobStore {
     this.setJobsApiStatus(apiConst.failure);
   }
 
-  getJobsData() {
+  *getJobsData() {
     this.setJobsApiStatus(apiConst.inProgress);
     const { selectedEmpTypes, salaryRange, searchKey } = this;
     const queryParams = [];
@@ -64,7 +63,7 @@ class JobStore {
     const url = `https://apis.ccbp.in/jobs?${queryParams.join("&")}`;
     const options = this.getFetchOptions();
 
-    makeAsyncCall(
+    yield makeAsyncCall(
       { url, options },
       this.onJobsApiSuccess,
       this.onJobsApiFailure
@@ -94,12 +93,12 @@ class JobStore {
     this.setProfileApiStatus(apiConst.failure);
   }
 
-  getProfileData() {
+  *getProfileData() {
     this.setProfileApiStatus(apiConst.inProgress);
     const options = this.getFetchOptions();
     const url = "https://apis.ccbp.in/profile";
 
-    makeAsyncCall(
+    yield makeAsyncCall(
       { url, options },
       this.onProfileApiSuccess,
       this.onProfileApiFailure
@@ -114,6 +113,17 @@ class JobStore {
         (j) => jobType !== j
       );
     } else this.selectedEmpTypes.push(jobType);
+  }
+
+  resetStore() {
+    this.jobsApiStatus = apiConst.initial;
+    this.profileApiStatus = apiConst.initial;
+    this.jobsData = [];
+    this.profileData = null;
+    this.selectedEmpTypes = [];
+    this.salaryRange = "";
+    this.searchKey = "";
+    this.apiErrors = null;
   }
 }
 

@@ -1,4 +1,4 @@
-import { action, makeAutoObservable } from "mobx";
+import { action, flow, makeAutoObservable } from "mobx";
 import apiConst from "../../../constants/apiConst";
 import { getAccessToken } from "../../../utils/accessToken";
 import makeAsyncCall from "../../../utils/makeAsyncCall";
@@ -38,7 +38,7 @@ class Job {
     this.packagePerAnnum = package_per_annum;
 
     makeAutoObservable(this, {
-      getJobDetails: action.bound,
+      getJobDetails: flow.bound,
       setJobDetailsData: action.bound,
       setApiStatus: action.bound,
       onJobDetailsApiFailure: action.bound,
@@ -73,14 +73,13 @@ class Job {
 
   onJobDetailsApiFailure(err: any) {
     this.setApiStatus(apiConst.failure);
-    console.log(err);
   }
 
-  getJobDetails() {
+  *getJobDetails() {
     this.setApiStatus(apiConst.inProgress);
     const url = `https://apis.ccbp.in/jobs/${this.id}`;
     const options = this.getFetchOptions();
-    makeAsyncCall(
+    yield makeAsyncCall(
       { url, options },
       this.onJobDetailsApiSuccess,
       this.onJobDetailsApiFailure

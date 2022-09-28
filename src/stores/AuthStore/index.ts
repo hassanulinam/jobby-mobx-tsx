@@ -5,7 +5,6 @@ import makeAsyncCall from "../../utils/makeAsyncCall";
 
 class AuthStore {
   loginErr = "";
-
   apiStatus = apiConst.initial;
 
   constructor() {
@@ -18,7 +17,7 @@ class AuthStore {
         setApiStatus: action.bound,
         onLogout: action.bound,
         saveToken: action.bound,
-        resetAuthState: action.bound,
+        resetStore: action.bound,
       },
       { autoBind: true }
     );
@@ -60,15 +59,16 @@ class AuthStore {
 
   onLogout() {
     deleteAccessToken();
-    this.resetAuthState();
+    this.resetStore();
   }
 
   saveToken(token: string) {
     setAccessToken(token);
   }
 
-  resetAuthState() {
+  resetStore() {
     this.loginErr = "";
+    this.apiStatus = apiConst.initial;
   }
 }
 

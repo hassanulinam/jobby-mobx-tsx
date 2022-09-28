@@ -3,7 +3,6 @@ import SimilarJob from "../SimilarJob";
 
 class JobDetail {
   similarJobs: SimilarJob[] = [];
-  jobDetailedData: any;
 
   companyLogoUrl: string;
   companyWebsiteUrl: string;
