@@ -1,12 +1,12 @@
 import { Route, Switch } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-import Jobs from "./components/Jobs";
-import JobItemDetails from "./components/JobItemDetails";
-import NotFound from "./components/NotFound";
-import Home from "./components/Home";
+import Jobs from "./routes/JobsPage";
+import JobItemDetails from "./routes/JobDetailsPage";
+import NotFound from "./routes/NotFoundPage";
+import Home from "./routes/HomePage";
 
-import Login from "./components/Login";
+import Login from "./routes/LoginPage";
 import { observer } from "mobx-react";
 import "./App.css";
 

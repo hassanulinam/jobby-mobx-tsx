@@ -1,6 +1,7 @@
-import Cookies from "js-cookie";
-import { flow, makeAutoObservable, observable } from "mobx";
-import apiConst from "../../Constants/apiConst";
+import { makeAutoObservable, observable } from "mobx";
+import apiConst from "../../constants/apiConst";
+import { getAccessToken } from "../../utils/accessToken";
+import makeAsyncCall from "../../utils/makeAsyncCall";
 import Job from "../models/Job";
 import ProfileDataModel from "../models/ProfileData";
 
@@ -9,24 +10,22 @@ class JobStore {
   profileApiStatus = apiConst.initial;
   jobsData: Job[] = [];
   profileData: ProfileDataModel | null = null;
-  employmentTypes: string[] = [];
+  selectedEmpTypes: string[] = [];
   salaryRange = "";
   searchKey = "";
+
+  apiErrors: any = null;
 
   constructor() {
     makeAutoObservable(
       this,
-      {
-        getJobsData: flow.bound,
-        getProfileData: flow.bound,
-        employmentTypes: observable.deep,
-      },
+      { selectedEmpTypes: observable },
       { autoBind: true }
     );
   }
 
   private getFetchOptions() {
-    const accessToken = Cookies.get("jwt_token");
+    const accessToken = getAccessToken();
     return {
       method: "GET",
       headers: {
@@ -35,52 +34,86 @@ class JobStore {
       },
     };
   }
+  // ========== Jobs api ===================
+  setJobsApiStatus(status: string) {
+    this.jobsApiStatus = status;
+  }
 
-  *getJobsData(): Generator<any, any, any> {
-    const { employmentTypes, salaryRange, searchKey } = this;
-    this.jobsApiStatus = apiConst.inProgress;
+  setJobsData(data: any) {
+    this.jobsData = data.jobs.map((j: any) => new Job(j));
+  }
 
+  onJobsApiSuccess(data: any) {
+    this.setJobsData(data);
+    this.setJobsApiStatus(apiConst.success);
+  }
+
+  onJobsApiFailure(err: any) {
+    this.apiErrors = err.message;
+    this.setJobsApiStatus(apiConst.failure);
+  }
+
+  getJobsData() {
+    this.setJobsApiStatus(apiConst.inProgress);
+    const { selectedEmpTypes, salaryRange, searchKey } = this;
     const queryParams = [];
-    queryParams.push(`employment_type=${employmentTypes.join(",")}`);
+    queryParams.push(`employment_type=${selectedEmpTypes.join(",")}`);
     queryParams.push(`minimum_package=${salaryRange}`);
     queryParams.push(`search=${searchKey}`);
 
-    const URL = `https://apis.ccbp.in/jobs?${queryParams.join("&")}`;
-    console.log("Fetching jobs data ::", URL);
-    const fetchOptions = this.getFetchOptions();
-    const response = yield fetch(URL, fetchOptions);
-    if (response.ok) {
-      const data = yield response.json();
-      this.jobsData = data.jobs.map((j: any) => new Job(j));
-      this.jobsApiStatus = apiConst.success;
-      console.log(`Successfully fetched ${data.total} items...`);
-    } else {
-      this.jobsApiStatus = apiConst.failure;
-    }
+    const url = `https://apis.ccbp.in/jobs?${queryParams.join("&")}`;
+    const options = this.getFetchOptions();
+
+    makeAsyncCall(
+      { url, options },
+      this.onJobsApiSuccess,
+      this.onJobsApiFailure
+    );
   }
 
-  *getProfileData(): Generator<any, any, any> {
-    this.profileApiStatus = apiConst.inProgress;
-    const fetchOptions = this.getFetchOptions();
-    const URL = "https://apis.ccbp.in/profile";
-    const response = yield fetch(URL, fetchOptions);
-    if (response.ok) {
-      const data = yield response.json();
-      this.profileData = new ProfileDataModel(
-        data.profile_details.name,
-        data.profile_details.profile_image_url,
-        data.profile_details.short_bio
-      );
-      this.profileApiStatus = apiConst.success;
-    } else {
-      this.profileApiStatus = apiConst.failure;
-    }
+  // ======== Profile api ==============
+  setProfileApiStatus(status: string) {
+    this.profileApiStatus = status;
   }
+
+  setProfileData(data: any) {
+    this.profileData = new ProfileDataModel(
+      data.profile_details.name,
+      data.profile_details.profile_image_url,
+      data.profile_details.short_bio
+    );
+  }
+
+  onProfileApiSuccess(data: any) {
+    this.setProfileData(data);
+    this.setProfileApiStatus(apiConst.success);
+  }
+
+  onProfileApiFailure(err: any) {
+    this.apiErrors = err.message;
+    this.setProfileApiStatus(apiConst.failure);
+  }
+
+  getProfileData() {
+    this.setProfileApiStatus(apiConst.inProgress);
+    const options = this.getFetchOptions();
+    const url = "https://apis.ccbp.in/profile";
+
+    makeAsyncCall(
+      { url, options },
+      this.onProfileApiSuccess,
+      this.onProfileApiFailure
+    );
+  }
+
+  //=================
 
   addOrRemoveJobTypeFilters(jobType: string) {
-    if (this.employmentTypes.includes(jobType)) {
-      this.employmentTypes = this.employmentTypes.filter((j) => jobType !== j);
-    } else this.employmentTypes.push(jobType);
+    if (this.selectedEmpTypes.includes(jobType)) {
+      this.selectedEmpTypes = this.selectedEmpTypes.filter(
+        (j) => jobType !== j
+      );
+    } else this.selectedEmpTypes.push(jobType);
   }
 }
 

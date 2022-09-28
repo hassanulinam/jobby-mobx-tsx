@@ -9,8 +9,8 @@ const Header = () => {
   const { authStore } = useStores();
   const history = useHistory();
 
-  const onLogout = async () => {
-    await authStore.onLogout();
+  const onLogout = () => {
+    authStore.onLogout();
     history.replace("/login");
   };
 

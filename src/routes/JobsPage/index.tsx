@@ -1,25 +1,27 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ThreeDots } from "react-loader-spinner";
 import { useStores } from "../../Hooks/useStores";
-
-import Header from "../Header";
-import { employmentTypes, salaryRanges } from "../../Constants/filtersData";
-
-import "./index.css";
+import { employmentTypes, salaryRanges } from "../../constants/filtersData";
 import { BsSearch } from "react-icons/bs";
-import JobItem from "../JobItem";
-import apiConst from "../../Constants/apiConst";
-import FailureView from "../FailureView";
+import apiConst from "../../constants/apiConst";
 import { runInAction } from "mobx";
 import { useEffect } from "react";
 import { observer } from "mobx-react";
+import "./index.css";
+import FailureView from "../../components/FailureView";
+import Header from "../../components/Header";
+import JobItem from "../../components/JobItem";
 
 const Jobs = () => {
   const { jobStore } = useStores();
 
   useEffect(() => {
-    console.log("job types: ", jobStore.employmentTypes);
+    jobStore.getProfileData();
+  }, []);
+
+  useEffect(() => {
     jobStore.getJobsData();
-  }, [jobStore.salaryRange, jobStore.employmentTypes.length]);
+  }, [jobStore.salaryRange, jobStore.selectedEmpTypes.length]);
 
   const changeSearchInput = (e: any) => {
     runInAction(() => {
@@ -161,7 +163,7 @@ const Jobs = () => {
             <button
               type="button"
               className="retry-btn"
-              // onClick={jobStore.getProfileData}
+              onClick={jobStore.getProfileData}
             >
               Retry
             </button>

@@ -1,15 +1,14 @@
 import { BsBriefcaseFill, BsStarFill } from "react-icons/bs";
 import { MdLocationOn } from "react-icons/md";
 import { ThreeDots } from "react-loader-spinner";
-import apiConst from "../../Constants/apiConst";
-import FailureView from "../FailureView";
-
-import Header from "../Header";
+import apiConst from "../../constants/apiConst";
 import { useStores } from "../../Hooks/useStores";
 import "./index.css";
 import { observer } from "mobx-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import Header from "../../components/Header";
+import FailureView from "../../components/FailureView";
 
 const JobItemDetails = () => {
   const { jobStore } = useStores();
@@ -34,20 +33,19 @@ const JobItemDetails = () => {
 
   const renderJobDetailsView = () => {
     const currentJob = getCurrentJob();
-    const jobDetails = currentJob?.jobDetails?.jobDetailedData;
-    const similarJobs = currentJob?.jobDetails?.similarJobs;
-    const {
-      company_logo_url,
-      title,
-      employment_type,
-      job_description,
-      location,
-      package_per_annum,
-      rating,
-      life_at_company,
-      skills,
-      company_website_url,
-    } = jobDetails;
+    const jobDetails = currentJob?.jobDetails;
+    const similarJobs = jobDetails?.similarJobs;
+
+    const companyLogoUrl = jobDetails?.companyLogoUrl;
+    const title = jobDetails?.title;
+    const employmentType = jobDetails?.employmentType;
+    const jobDescription = jobDetails?.jobDescription;
+    const location = jobDetails?.location;
+    const packagePerAnnum = jobDetails?.packagePerAnnum;
+    const rating = jobDetails?.rating;
+    const lifeAtCompany = jobDetails?.lifeAtCompany;
+    const skills = jobDetails?.skills;
+    const companyWebsiteUrl = jobDetails?.companyWebsiteUrl;
 
     return (
       <ul>
@@ -55,7 +53,7 @@ const JobItemDetails = () => {
           <div className="flex-row">
             <img
               alt="job details company logo"
-              src={company_logo_url}
+              src={companyLogoUrl}
               className="company-logo"
             />
             <div className="ml-1">
@@ -74,22 +72,22 @@ const JobItemDetails = () => {
               </div>
               <div className="flex-row">
                 <BsBriefcaseFill color="#dddddd" size="20" />
-                <p className="ml-1">{employment_type}</p>
+                <p className="ml-1">{employmentType}</p>
               </div>
             </div>
             <div>
-              <p className="job-title">{package_per_annum}</p>
+              <p className="job-title">{packagePerAnnum}</p>
             </div>
           </div>
           <hr />
           <div className="job-desc mb-2">
             <h1 className="desc-heading">Description</h1>
-            <p className="line-gap">{job_description}</p>
+            <p className="line-gap">{jobDescription}</p>
           </div>
-          <a href={company_website_url}>Visit</a>
+          <a href={companyWebsiteUrl}>Visit</a>
           <h1>Skills</h1>
           <ul className="skill-cards-container mb-2">
-            {skills.map((item: any) => (
+            {skills?.map((item: any) => (
               <li className="skill-card flex-row" key={item.name}>
                 <img
                   alt={item.name}
@@ -103,10 +101,10 @@ const JobItemDetails = () => {
           <div>
             <h1>Life at company</h1>
             <div className="life-at-company">
-              <p>{life_at_company.description}</p>
+              <p>{lifeAtCompany?.description}</p>
               <img
                 alt="life at company"
-                src={life_at_company.image_url}
+                src={lifeAtCompany.image_url}
                 className="ml-1"
               />
             </div>

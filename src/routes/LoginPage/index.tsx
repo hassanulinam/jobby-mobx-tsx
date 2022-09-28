@@ -1,29 +1,29 @@
-import Cookies from "js-cookie";
-import { runInAction } from "mobx";
 import { observer } from "mobx-react";
+import { useState } from "react";
 import { Redirect, useHistory } from "react-router-dom";
 import { useStores } from "../../Hooks/useStores";
+import { getAccessToken } from "../../utils/accessToken";
 import "./index.css";
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   const { authStore } = useStores();
   const history = useHistory();
 
   const onChangeName = (e: any) => {
-    runInAction(() => {
-      authStore.username = e.target.value;
-    });
+    setUsername(e.target.value);
   };
   const onPasswordChange = (e: any) => {
-    runInAction(() => {
-      authStore.password = e.target.value;
-    });
+    setPassword(e.target.value);
   };
 
-  const onLogin = async (e: any) => {
+  const onLogin = (e: any) => {
     e.preventDefault();
-    await authStore.onLogin();
-    history.replace("/");
+    authStore.onLogin({ username, password }, () => {
+      history.replace("/");
+    });
   };
 
   const renderForm = () => (
@@ -33,27 +33,27 @@ const Login = () => {
         src="https://assets.ccbp.in/frontend/react-js/logo-img.png "
         className="login-website-logo"
       />
-      <label htmlFor="usernameInput">USERNAME</label>
+      <label htmlFor="usernameInput" className="login-form-label">
+        USERNAME
+      </label>
       <input
         id="usernameInput"
-        value={authStore.username}
+        value={username}
         className="input-field"
         placeholder="Username"
-        // onBlur={}
         onChange={onChangeName}
       />
-      <p className="error-message">{authStore.nameErr}</p>
-      <label htmlFor="passwordInput">PASSWORD</label>
+      <label htmlFor="passwordInput" className="login-form-label">
+        PASSWORD
+      </label>
       <input
         id="passwordInput"
         type="password"
-        value={authStore.password}
+        value={password}
         className="input-field"
         placeholder="Password"
-        // onBlur={this.onPasswordInputChange}
         onChange={onPasswordChange}
       />
-      <p className="error-message">{authStore.passErr}</p>
       <button type="submit" className="login-btn">
         Login
       </button>
@@ -61,7 +61,8 @@ const Login = () => {
     </form>
   );
 
-  const accessToken = Cookies.get("jwt_token");
+  const accessToken = getAccessToken();
+  console.log("loginPage-token: ", accessToken);
   if (accessToken !== undefined) return <Redirect to="/" />;
   return <div className="login-route-container">{renderForm()}</div>;
 };

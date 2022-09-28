@@ -1,54 +1,73 @@
-import Cookies from "js-cookie";
-import { flow, makeAutoObservable } from "mobx";
+import { action, flow, makeAutoObservable } from "mobx";
+import apiConst from "../../constants/apiConst";
+import { deleteAccessToken, setAccessToken } from "../../utils/accessToken";
+import makeAsyncCall from "../../utils/makeAsyncCall";
 
 class AuthStore {
-  username = "";
-  password = "";
-  nameErr = "";
-  passErr = "";
   loginErr = "";
-  accessToken = "";
 
-  isUserLoggedIn = false;
+  apiStatus = apiConst.initial;
 
   constructor() {
-    makeAutoObservable(this, { onLogin: flow.bound }, { autoBind: true });
+    makeAutoObservable(
+      this,
+      {
+        onLogin: flow.bound,
+        onLoginApiSuccess: action.bound,
+        onLoginApiFailure: action.bound,
+        setApiStatus: action.bound,
+        onLogout: action.bound,
+        saveToken: action.bound,
+        resetAuthState: action.bound,
+      },
+      { autoBind: true }
+    );
   }
 
-  *onLogin(): Generator<any, any, any> {
-    const { username, password } = this;
-    const userDetails = { username, password };
-    const URL = "https://apis.ccbp.in/login";
+  // ====================================================
+
+  setApiStatus(status: string) {
+    this.apiStatus = status;
+  }
+
+  onLoginApiSuccess = (onSuccess: () => void) => (data: any) => {
+    if (data.jwt_token) {
+      this.saveToken(data.jwt_token);
+      this.setApiStatus(apiConst.success);
+      onSuccess();
+    } else this.loginErr = `*${data.error_msg}`;
+  };
+
+  onLoginApiFailure(response: any) {
+    const data = response;
+    this.loginErr = `*${data.error_msg}`;
+    this.setApiStatus(apiConst.failure);
+  }
+
+  *onLogin({ username, password }: any, onSuccess: any) {
+    const url = "https://apis.ccbp.in/login";
     const options = {
       method: "POST",
-      body: JSON.stringify(userDetails),
+      body: JSON.stringify({ username, password }),
     };
-    const response = yield fetch(URL, options);
-    const data = yield response.json();
-    if (response.ok) {
-      this.saveTokenAndGoHome(data.jwt_token);
-    } else {
-      this.loginErr = `*${data.error_msg}`;
-    }
+
+    yield makeAsyncCall(
+      { url, options },
+      this.onLoginApiSuccess(onSuccess),
+      this.onLoginApiFailure
+    );
   }
 
   onLogout() {
-    Cookies.remove("jwt_token");
-    this.isUserLoggedIn = false;
-  }
-
-  saveTokenAndGoHome(token: string) {
-    Cookies.set("jwt_token", token, { expires: 3 });
-    console.log("saving token...", token);
-    this.isUserLoggedIn = true;
+    deleteAccessToken();
     this.resetAuthState();
   }
 
+  saveToken(token: string) {
+    setAccessToken(token);
+  }
+
   resetAuthState() {
-    this.nameErr = "";
-    this.username = "";
-    this.passErr = "";
-    this.password = "";
     this.loginErr = "";
   }
 }
