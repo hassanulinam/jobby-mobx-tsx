@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ThreeDots } from "react-loader-spinner";
-import { useStores } from "../../Hooks/useStores";
+import { useStores } from "../../hooks/useStores";
 import { employmentTypes, salaryRanges } from "../../constants/filtersData";
 import { BsSearch } from "react-icons/bs";
 import apiConst from "../../constants/apiConst";

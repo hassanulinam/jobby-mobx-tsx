@@ -2,8 +2,8 @@ import { flow, makeAutoObservable } from "mobx";
 import apiConst from "../../constants/apiConst";
 import { getFetchOptions } from "../../utils/getFetchOptions";
 import makeAsyncCall from "../../utils/makeAsyncCall";
-import Job from "../models/Job";
-import ProfileDataModel from "../models/ProfileData";
+import Job from "../Models/Job";
+import ProfileDataModel from "../Models/ProfileData";
 
 class JobStore {
   jobsApiStatus = apiConst.initial;

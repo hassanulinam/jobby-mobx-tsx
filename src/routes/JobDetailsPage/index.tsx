@@ -2,7 +2,7 @@ import { BsBriefcaseFill, BsStarFill } from "react-icons/bs";
 import { MdLocationOn } from "react-icons/md";
 import { ThreeDots } from "react-loader-spinner";
 import apiConst from "../../constants/apiConst";
-import { useStores } from "../../Hooks/useStores";
+import { useStores } from "../../hooks/useStores";
 import "./index.css";
 import { observer } from "mobx-react";
 import { useEffect } from "react";

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { useState } from "react";
 import { Redirect, useHistory } from "react-router-dom";
-import { useStores } from "../../Hooks/useStores";
+import { useStores } from "../../hooks/useStores";
 import { getAccessToken } from "../../utils/accessToken";
 import "./index.css";
 

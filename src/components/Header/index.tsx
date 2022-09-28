@@ -1,10 +1,10 @@
 import { Link, useHistory, withRouter } from "react-router-dom";
 import { BsBriefcaseFill } from "react-icons/bs";
 import { IoMdHome, IoMdExit } from "react-icons/io";
-import { useStores } from "../../Hooks/useStores";
+import { useStores } from "../../hooks/useStores";
 import "./index.css";
 import { observer } from "mobx-react";
-import { useClearStores } from "../../Hooks/useClearStores";
+import { useClearStores } from "../../hooks/useClearStores";
 
 const Header = () => {
   const { authStore } = useStores();
