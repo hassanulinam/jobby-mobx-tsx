@@ -1,6 +1,6 @@
 import { flow, makeAutoObservable } from "mobx";
 import apiConst from "../../constants/apiConst";
-import { getAccessToken } from "../../utils/accessToken";
+import { getFetchOptions } from "../../utils/getFetchOptions";
 import makeAsyncCall from "../../utils/makeAsyncCall";
 import Job from "../models/Job";
 import ProfileDataModel from "../models/ProfileData";
@@ -23,16 +23,6 @@ class JobStore {
     );
   }
 
-  private getFetchOptions() {
-    const accessToken = getAccessToken();
-    return {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-  }
   // ========== Jobs api ===================
   setJobsApiStatus(status: string) {
     this.jobsApiStatus = status;
@@ -61,7 +51,7 @@ class JobStore {
     queryParams.push(`search=${searchKey}`);
 
     const url = `https://apis.ccbp.in/jobs?${queryParams.join("&")}`;
-    const options = this.getFetchOptions();
+    const options = getFetchOptions();
 
     yield makeAsyncCall(
       { url, options },
@@ -95,7 +85,7 @@ class JobStore {
 
   *getProfileData() {
     this.setProfileApiStatus(apiConst.inProgress);
-    const options = this.getFetchOptions();
+    const options = getFetchOptions();
     const url = "https://apis.ccbp.in/profile";
 
     yield makeAsyncCall(

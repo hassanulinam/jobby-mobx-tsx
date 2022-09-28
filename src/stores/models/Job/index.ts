@@ -1,6 +1,7 @@
 import { action, flow, makeAutoObservable } from "mobx";
 import apiConst from "../../../constants/apiConst";
 import { getAccessToken } from "../../../utils/accessToken";
+import { getFetchOptions } from "../../../utils/getFetchOptions";
 import makeAsyncCall from "../../../utils/makeAsyncCall";
 import JobDetail from "../JobDetail";
 
@@ -46,17 +47,6 @@ class Job {
     });
   }
 
-  private getFetchOptions = () => {
-    const accessToken = getAccessToken();
-    return {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-  };
-
   // ======== JobDetails api ==============
   setApiStatus(status: string) {
     this.jobDetailsApi = status;
@@ -78,7 +68,7 @@ class Job {
   *getJobDetails() {
     this.setApiStatus(apiConst.inProgress);
     const url = `https://apis.ccbp.in/jobs/${this.id}`;
-    const options = this.getFetchOptions();
+    const options = getFetchOptions();
     yield makeAsyncCall(
       { url, options },
       this.onJobDetailsApiSuccess,
