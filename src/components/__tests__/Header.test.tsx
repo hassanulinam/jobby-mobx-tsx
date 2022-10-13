@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "mobx-react";
 import { BrowserRouter } from "react-router-dom";
@@ -34,5 +34,11 @@ describe("tests Header component", () => {
     );
     const links = screen.getAllByRole("link");
     expect(links.length).toBe(3);
+
+    expect(links[1]).toHaveTextContent(/home/i);
+    expect(links[2]).toHaveTextContent(/jobs/i);
+    const websiteLogo = within(links[0]).getByAltText("website logo");
+    expect(websiteLogo).toHaveStyle({ height: 36 });
+    expect(mockedOnLogout).not.toHaveBeenCalled();
   });
 });

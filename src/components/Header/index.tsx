@@ -1,10 +1,19 @@
-import { Link, useHistory, withRouter } from "react-router-dom";
+import {
+  Link,
+  useHistory,
+  withRouter,
+  RouteComponentProps,
+} from "react-router-dom";
 import { BsBriefcaseFill } from "react-icons/bs";
 import { IoMdHome, IoMdExit } from "react-icons/io";
 import { useClearStores } from "../../hooks/useClearStores";
 import "./index.css";
 
-const Header = ({ onLogout }: any) => {
+interface Props extends RouteComponentProps {
+  onLogout: () => void;
+}
+
+const Header = ({ onLogout }: Props) => {
   const history = useHistory();
   const clearStores = useClearStores();
 
