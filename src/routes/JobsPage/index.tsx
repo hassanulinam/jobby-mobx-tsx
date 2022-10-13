@@ -13,7 +13,7 @@ import Header from "../../components/Header";
 import JobItem from "../../components/JobItem";
 
 const Jobs = () => {
-  const { jobStore } = useStores();
+  const { jobStore, authStore } = useStores();
 
   useEffect(() => {
     jobStore.getProfileData();
@@ -146,7 +146,10 @@ const Jobs = () => {
       case apiConst.success:
         return (
           <div className="profile-card-wrapper">
-            <div className="profile-card-container">
+            <div
+              className="profile-card-container"
+              data-testid="profile-card-container"
+            >
               <img
                 src={profileData?.profileImgUrl}
                 alt="profile"
@@ -196,7 +199,7 @@ const Jobs = () => {
 
   return (
     <div className="jobs-route-container">
-      <Header />
+      <Header onLogout={authStore.onLogout} />
       <div className="jobs-route-contents">
         {renderProfileAndFiltersContainer()}
         <div className="jobs-page-container">

@@ -57,7 +57,9 @@ const Login = () => {
       <button type="submit" className="login-btn">
         Login
       </button>
-      <p className="error-message">{authStore.loginErr}</p>
+      <p data-testid="login-err" className="error-message">
+        {authStore.loginErr}
+      </p>
     </form>
   );
 

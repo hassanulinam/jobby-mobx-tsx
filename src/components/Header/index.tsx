@@ -1,18 +1,15 @@
 import { Link, useHistory, withRouter } from "react-router-dom";
 import { BsBriefcaseFill } from "react-icons/bs";
 import { IoMdHome, IoMdExit } from "react-icons/io";
-import { useStores } from "../../hooks/useStores";
-import "./index.css";
-import { observer } from "mobx-react";
 import { useClearStores } from "../../hooks/useClearStores";
+import "./index.css";
 
-const Header = () => {
-  const { authStore } = useStores();
+const Header = ({ onLogout }: any) => {
   const history = useHistory();
   const clearStores = useClearStores();
 
-  const onLogout = () => {
-    authStore.onLogout();
+  const logout = () => {
+    onLogout();
     clearStores();
     history.replace("/login");
   };
@@ -41,7 +38,7 @@ const Header = () => {
           <button
             type="button"
             className="transparent-btn d-inline d-md-none"
-            onClick={authStore.onLogout}
+            onClick={logout}
           >
             <IoMdExit size="30" color="#ffffff" />
           </button>
@@ -50,7 +47,7 @@ const Header = () => {
           <button
             type="button"
             className="logout-btn d-none d-md-inline"
-            onClick={onLogout}
+            onClick={logout}
           >
             Logout
           </button>
@@ -60,4 +57,4 @@ const Header = () => {
   );
 };
 
-export default withRouter(observer(Header));
+export default withRouter(Header);

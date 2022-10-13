@@ -11,7 +11,8 @@ import Header from "../../components/Header";
 import FailureView from "../../components/FailureView";
 
 const JobItemDetails = () => {
-  const { jobStore } = useStores();
+  const { jobStore, authStore } = useStores();
+
   const params: any = useParams();
 
   const getCurrentJob = () => {
@@ -171,7 +172,7 @@ const JobItemDetails = () => {
 
   return (
     <div className="job-details-route-container">
-      <Header />
+      <Header onLogout={authStore.onLogout} />
       <div className="job-details-card-wrapper">
         {renderViewBasedOnApiStatus()}
       </div>
